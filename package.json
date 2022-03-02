@@ -1,0 +1,7 @@
+{
+  "name": "enquentes-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Willian Mendes <willianmendesbr@icloud.com>",
+  "license": "MIT"
+}
