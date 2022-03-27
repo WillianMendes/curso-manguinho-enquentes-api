@@ -1,20 +1,15 @@
 import { Request, Response } from '../protocol/http';
 import MissingParamException from '../exception/missing-param.exception';
+import badRequest from '../helper/BadRequest';
 
 class SignupController {
   public handle(request : Request): Response {
     if (!request.body.name) {
-      return {
-        statusCode: 400,
-        body: new MissingParamException('name'),
-      };
+      return badRequest(new MissingParamException('name'));
     }
 
     if (!request.body.email) {
-      return {
-        statusCode: 400,
-        body: new MissingParamException('email'),
-      };
+      return badRequest(new MissingParamException('email'));
     }
 
     return {
