@@ -86,7 +86,24 @@ describe('Signup Controller', () => {
 
     const httpResponse: Response = sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new MissingParamException('password_confirmation'));
+    expect(httpResponse.body).toEqual(new MissingParamException('passwordConfirmation'));
+  });
+
+  test('Should return 400 if password confirmation is fails', () => {
+    const { sut }: SutTypes = makeSut();
+
+    const httpRequest: Request = {
+      body: {
+        name: 'any name',
+        email: 'any_email@email.com',
+        password: 'any_password',
+        passwordConfirmation: 'invalid_password_confirmation',
+      },
+    };
+
+    const httpResponse: Response = sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new InvalidParamException('passwordConfirmation'));
   });
 
   test('Should return 400 if invalid email is provided', () => {
@@ -98,7 +115,7 @@ describe('Signup Controller', () => {
         name: 'any name',
         email: 'invalid_email#email.com',
         password: 'any_password',
-        password_confirmation: 'any_password',
+        passwordConfirmation: 'any_password',
       },
     };
 
@@ -116,7 +133,7 @@ describe('Signup Controller', () => {
         name: 'any name',
         email: 'any_email@email.com',
         password: 'any_password',
-        password_confirmation: 'any_password',
+        passwordConfirmation: 'any_password',
       },
     };
 
@@ -128,14 +145,14 @@ describe('Signup Controller', () => {
     const { sut, emailValidatorStub } = makeSut();
     jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => {
       throw new ServerException();
-    })
+    });
 
     const httpRequest: Request = {
       body: {
         name: 'any name',
         email: 'any_email@email.com',
         password: 'any_password',
-        password_confirmation: 'any_password',
+        passwordConfirmation: 'any_password',
       },
     };
 
