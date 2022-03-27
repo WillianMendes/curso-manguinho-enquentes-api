@@ -4,6 +4,7 @@ import { Request, Response } from '../protocol/http';
 import InvalidParamException from '../exception/invalid-param.exception';
 import MissingParamException from '../exception/missing-param.exception';
 import badRequest from '../helper/BadRequest';
+import ServerException from '../exception/server.exception';
 
 class SignupController implements Controller {
   private readonly emailValidator: EmailValidator;
@@ -13,25 +14,32 @@ class SignupController implements Controller {
   }
 
   public handle(request : Request): Response {
-    const { email } = request.body;
+    try {
+      const { email } = request.body;
 
-    const requireFields: string[] = ['name', 'email', 'password', 'password_confirmation'];
-    const invalidRequiredField: string | undefined = requireFields
-      .find((field: string) => !request.body[field]);
+      const requireFields: string[] = ['name', 'email', 'password', 'password_confirmation'];
+      const invalidRequiredField: string | undefined = requireFields
+        .find((field: string) => !request.body[field]);
 
-    if (invalidRequiredField) {
-      return badRequest(new MissingParamException(invalidRequiredField));
+      if (invalidRequiredField) {
+        return badRequest(new MissingParamException(invalidRequiredField));
+      }
+
+      const emailIsValid: boolean = this.emailValidator.isValid(email);
+      if (!emailIsValid) {
+        return badRequest(new InvalidParamException('email'));
+      }
+
+      return {
+        statusCode: 200,
+        body: request.body,
+      };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        body: new ServerException(),
+      };
     }
-
-    const emailIsValid: boolean = this.emailValidator.isValid(email);
-    if (!emailIsValid) {
-      return badRequest(new InvalidParamException('email'));
-    }
-
-    return {
-      statusCode: 200,
-      body: request.body,
-    };
   }
 }
 
