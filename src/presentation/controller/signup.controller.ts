@@ -4,7 +4,7 @@ import badRequest from '../helper/BadRequest';
 
 class SignupController {
   public handle(request : Request): Response {
-    const requireFields: string[] = ['name', 'email'];
+    const requireFields: string[] = ['name', 'email', 'password'];
     const hasError: string | undefined = requireFields
       .find((field: string) => !request.body[field]);
 
