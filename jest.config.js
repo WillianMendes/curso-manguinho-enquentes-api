@@ -7,6 +7,5 @@ module.exports = {
   coverageProvider: 'v8',
   preset: 'ts-jest',
   roots: ['<rootDir>/src'],
-  // transform: undefined,
   testEnvironment: 'node',
 };

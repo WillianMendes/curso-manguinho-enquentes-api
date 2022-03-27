@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "husky install",
     "lint": "eslint 'src/**' --fix",
-    "test": "jest",
+    "test": "jest --watch",
     "test:staged": "jest"
   },
   "devDependencies": {
