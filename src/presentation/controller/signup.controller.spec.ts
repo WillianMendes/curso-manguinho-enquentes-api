@@ -1,9 +1,7 @@
 import SignupController from './signup.controller';
 import EmailValidator from '../protocol/email.validator';
 import { Request, Response } from '../protocol/http';
-import InvalidParamException from '../exception/invalid-param.exception';
-import MissingParamException from '../exception/missing-param.exception';
-import ServerException from '../exception/server.exception';
+import { InvalidParamException, MissingParamException, ServerException } from '../exception';
 
 interface SutTypes {
   sut: SignupController,
