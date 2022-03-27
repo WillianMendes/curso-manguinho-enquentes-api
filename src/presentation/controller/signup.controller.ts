@@ -4,12 +4,12 @@ import badRequest from '../helper/BadRequest';
 
 class SignupController {
   public handle(request : Request): Response {
-    if (!request.body.name) {
-      return badRequest(new MissingParamException('name'));
-    }
+    const requireFields: string[] = ['name', 'email'];
+    const hasError: string | undefined = requireFields
+      .find((field: string) => !request.body[field]);
 
-    if (!request.body.email) {
-      return badRequest(new MissingParamException('email'));
+    if (hasError) {
+      return badRequest(new MissingParamException(hasError));
     }
 
     return {
