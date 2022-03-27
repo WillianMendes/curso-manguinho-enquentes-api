@@ -13,20 +13,15 @@ class SignupController implements Controller {
 
   public handle(request : Request): Response {
     try {
-      const { email } = request.body;
+      const { email, password, passwordConfirmation } = request.body;
 
-      const requireFields: string[] = ['name', 'email', 'password', 'password_confirmation'];
+      const requireFields: string[] = ['name', 'email', 'password', 'passwordConfirmation'];
       const invalidRequiredField: string | undefined = requireFields
         .find((field: string) => !request.body[field]);
 
-      if (invalidRequiredField) {
-        return badRequest(new MissingParamException(invalidRequiredField));
-      }
-
-      const emailIsValid: boolean = this.emailValidator.isValid(email);
-      if (!emailIsValid) {
-        return badRequest(new InvalidParamException('email'));
-      }
+      if (invalidRequiredField) return badRequest(new MissingParamException(invalidRequiredField));
+      if (!this.emailValidator.isValid(email)) return badRequest(new InvalidParamException('email'));
+      if (password !== passwordConfirmation) return badRequest(new InvalidParamException('passwordConfirmation'));
 
       return {
         statusCode: 200,
