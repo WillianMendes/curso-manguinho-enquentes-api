@@ -21,6 +21,7 @@
     "rules": {
         "class-methods-use-this": "off",
         "no-useless-constructor": "off",
+        "no-unused-vars": "off",
         "import/extensions": [
             "error",
             "ignorePackages",
