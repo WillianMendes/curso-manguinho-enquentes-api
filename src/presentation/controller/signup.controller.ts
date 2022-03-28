@@ -1,3 +1,4 @@
+import { AddAccount } from '../../domain/useCase/add-account';
 import Controller from '../protocol';
 import { Request, Response } from '../protocol/http';
 import EmailValidator from '../protocol/validator';
@@ -7,13 +8,18 @@ import { badRequest, serverError } from '../helper/BadRequest';
 class SignupController implements Controller {
   private readonly emailValidator: EmailValidator;
 
-  constructor(emailValidator: EmailValidator) {
+  private readonly addAccount: AddAccount;
+
+  constructor(emailValidator: EmailValidator, addAccount: AddAccount) {
     this.emailValidator = emailValidator;
+    this.addAccount = addAccount;
   }
 
   public handle(request : Request): Response {
     try {
-      const { email, password, passwordConfirmation } = request.body;
+      const {
+        name, email, password, passwordConfirmation,
+      } = request.body;
 
       const requireFields: string[] = ['name', 'email', 'password', 'passwordConfirmation'];
       const invalidRequiredField: string | undefined = requireFields
@@ -22,6 +28,8 @@ class SignupController implements Controller {
       if (invalidRequiredField) return badRequest(new MissingParamException(invalidRequiredField));
       if (!this.emailValidator.isValid(email)) return badRequest(new InvalidParamException('email'));
       if (password !== passwordConfirmation) return badRequest(new InvalidParamException('passwordConfirmation'));
+
+      this.addAccount.add({ name, email, password });
 
       return {
         statusCode: 200,
