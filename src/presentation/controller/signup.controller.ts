@@ -3,7 +3,7 @@ import Controller from '../protocol';
 import { Request, Response } from '../protocol/http';
 import EmailValidator from '../protocol/validator';
 import { InvalidParamException, MissingParamException } from '../exception';
-import { badRequest, serverError } from '../helper/BadRequest';
+import { badRequest, created, serverError } from '../helper/http-helper';
 
 class SignupController implements Controller {
   private readonly emailValidator: EmailValidator;
@@ -30,11 +30,7 @@ class SignupController implements Controller {
       if (password !== passwordConfirmation) return badRequest(new InvalidParamException('passwordConfirmation'));
 
       const account = this.addAccount.add({ name, email, password });
-
-      return {
-        statusCode: 201,
-        body: account,
-      };
+      return created(account);
     } catch (error) {
       return serverError();
     }
