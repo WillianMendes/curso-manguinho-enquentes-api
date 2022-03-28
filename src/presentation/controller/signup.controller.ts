@@ -29,11 +29,11 @@ class SignupController implements Controller {
       if (!this.emailValidator.isValid(email)) return badRequest(new InvalidParamException('email'));
       if (password !== passwordConfirmation) return badRequest(new InvalidParamException('passwordConfirmation'));
 
-      this.addAccount.add({ name, email, password });
+      const account = this.addAccount.add({ name, email, password });
 
       return {
-        statusCode: 200,
-        body: request.body,
+        statusCode: 201,
+        body: account,
       };
     } catch (error) {
       return serverError();
