@@ -1,3 +1,5 @@
+import AccountModel from '../../domain/model/account.model';
+import { AddAccount, AddAccountModel } from '../../domain/useCase/add-account';
 import SignupController from './signup.controller';
 import { Request, Response } from '../protocol/http';
 import EmailValidator from '../protocol/validator';
@@ -6,6 +8,7 @@ import { InvalidParamException, MissingParamException, ServerException } from '.
 interface SutTypes {
   sut: SignupController,
   emailValidatorStub: EmailValidator,
+  addAccountStub: AddAccount
 }
 
 const makeEmailValidatorStub = (): EmailValidator => {
@@ -17,11 +20,26 @@ const makeEmailValidatorStub = (): EmailValidator => {
   return new EmailValidatorStub();
 };
 
+const makeAddAccountStub = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    add(account: AddAccountModel): AccountModel {
+      return {
+        id: 'valid id',
+        name: account.name,
+        email: account.email,
+        password: account.password,
+      };
+    }
+  }
+  return new AddAccountStub();
+};
+
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidatorStub();
-  const sut = new SignupController(emailValidatorStub);
+  const addAccountStub = makeAddAccountStub();
+  const sut = new SignupController(emailValidatorStub, addAccountStub);
 
-  return { sut, emailValidatorStub };
+  return { sut, emailValidatorStub, addAccountStub };
 };
 
 describe('Signup Controller', () => {
@@ -159,5 +177,26 @@ describe('Signup Controller', () => {
     const httpResponse: Response = sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerException());
+  });
+
+  test('Should call AddAccount with correct values', () => {
+    const { sut, addAccountStub }: SutTypes = makeSut();
+    const addSpy = jest.spyOn(addAccountStub, 'add');
+
+    const httpRequest: Request = {
+      body: {
+        name: 'valid name',
+        email: 'valid_email@email.com',
+        password: 'valid_password',
+        passwordConfirmation: 'valid_password',
+      },
+    };
+
+    sut.handle(httpRequest);
+    expect(addSpy).toHaveBeenCalledWith({
+      name: httpRequest.body.name,
+      email: httpRequest.body.email,
+      password: httpRequest.body.password,
+    });
   });
 });
